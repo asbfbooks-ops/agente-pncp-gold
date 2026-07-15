@@ -1,0 +1,83 @@
+COMO COLOCAR O AGENTE PYTHON NA NUVEM (RENDER — GRATUITO)
+============================================================
+
+O QUE É ISSO
+-------------
+Esse agente (agente_pncp.py) é o que busca editais reais no PNCP, conversa
+com a IA (Claude), e lê e-mails de licitação no Gmail. Até agora ele só
+funcionava no seu PC (localhost:5000) — por isso, quando você acessa o
+sistema publicado (asbfperiodicos.netlify.app) de outro lugar, ele não
+encontra o agente e cai nos dados de demonstração.
+
+A solução: colocar esse mesmo agente rodando 24h num servidor gratuito
+(Render), com um endereço público fixo. Depois disso, o sistema busca
+dados reais de qualquer lugar, sem precisar do seu PC ligado.
+
+PASSO 1 — CRIAR CONTA NO RENDER
+---------------------------------
+1. Acesse https://render.com
+2. Crie uma conta gratuita (pode usar login do GitHub ou e-mail)
+3. Não pede cartão de crédito para o plano gratuito
+
+PASSO 2 — SUBIR OS ARQUIVOS PARA O GITHUB
+--------------------------------------------
+O Render precisa puxar o código de um repositório GitHub.
+
+1. Acesse https://github.com e crie uma conta (se ainda não tiver)
+2. Clique em "New repository" (Novo repositório)
+3. Nome sugerido: agente-pncp-gold
+4. Deixe como "Public" (não precisa ser privado)
+5. Clique em "Create repository"
+6. Na tela seguinte, clique em "uploading an existing file"
+   (ou "Add file" > "Upload files")
+7. Arraste os dois arquivos desta pasta:
+   - agente_pncp.py
+   - requirements.txt
+8. Clique em "Commit changes" para salvar
+
+PASSO 3 — CRIAR O WEB SERVICE NO RENDER
+-------------------------------------------
+1. No painel do Render, clique em "New +" → "Web Service"
+2. Conecte sua conta do GitHub (autoriza o Render a ver seus repositórios)
+3. Selecione o repositório "agente-pncp-gold" que você acabou de criar
+4. Configure:
+   - Name: agente-pncp-gold (ou o nome que preferir)
+   - Region: Ohio (US East) ou a mais próxima disponível
+   - Branch: main
+   - Runtime: Python 3
+   - Build Command: pip install -r requirements.txt
+   - Start Command: gunicorn agente_pncp:app
+   - Instance Type: Free
+5. Clique em "Create Web Service"
+6. Aguarde o deploy (leva de 2 a 5 minutos na primeira vez)
+
+PASSO 4 — PEGAR A URL PÚBLICA
+--------------------------------
+Quando o deploy terminar, o Render mostra uma URL no topo da página,
+parecida com:
+   https://agente-pncp-gold.onrender.com
+
+Essa é a URL pública do seu agente. Teste abrindo no navegador:
+   https://agente-pncp-gold.onrender.com/health
+
+Deve aparecer algo tipo {"status": "ok", ...} — se aparecer, está no ar.
+
+PASSO 5 — ME PASSAR ESSA URL
+-------------------------------
+Copie essa URL e me manda aqui na conversa. Eu vou atualizar o
+gold-erp.html para apontar pra esse endereço em vez de "localhost:5000",
+e te devolvo o arquivo pronto pra subir no Netlify de novo.
+
+LIMITAÇÃO HONESTA DO PLANO GRATUITO
+--------------------------------------
+O serviço "dorme" depois de 15 minutos sem uso. Na primeira busca depois
+de um tempo parado, pode demorar de 30 a 60 segundos para "acordar" —
+isso é normal e esperado no plano gratuito. Se isso incomodar no dia a
+dia, o plano pago do Render (a partir de US$7/mês) remove essa espera.
+
+SOBRE O E-MAIL (GMAIL)
+--------------------------
+Depois que o agente estiver no ar, a busca de e-mails de licitação
+também vai funcionar de qualquer lugar — mas continua precisando que
+você tenha configurado o e-mail e a Senha de App do Gmail em
+Configurações, dentro do próprio sistema (isso não muda).
