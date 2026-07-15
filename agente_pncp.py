@@ -119,7 +119,7 @@ def health():
 @app.route("/editais", methods=["GET"])
 def buscar_editais():
     termo = request.args.get("termo", "revistas")
-    termos = [t.strip() for t in re.split(r"[+\s,]+", termo) if t.strip()]
+    termos = [t.strip() for t in re.split(r"[+,]+", termo) if t.strip() and t.strip().lower() not in ("de","da","do","e","a","o","em","para")]
     ano = request.args.get("ano", str(datetime.now().year))
     modalidade_param = request.args.get("modalidade", "")
     tamanho_desejado = int(request.args.get("tamanho", 20))
@@ -497,3 +497,4 @@ if __name__ == "__main__":
     print("=" * 60)
     porta = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=porta, debug=False)
+  "corrige filtro de palavras-chave" e clica em "Commit changes"
